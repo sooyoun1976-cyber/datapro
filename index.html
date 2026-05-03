@@ -1,90 +1,488 @@
 <html lang="ko">
 <head>
   <meta charset="UTF-8">
-  <title>재고 관리</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>SIWOOM K</title>
+  <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@300;400;500;700&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet">
   <style>
-    body { font-family: sans-serif; max-width: 900px; margin: 40px auto; padding: 0 20px; }
-    table { width: 100%; border-collapse: collapse; margin-top: 20px; }
-    th, td { border: 1px solid #ddd; padding: 10px; text-align: center; }
-    th { background: #4285f4; color: white; }
-    input, select { padding: 8px; margin: 5px; border: 1px solid #ccc; border-radius: 4px; }
-    button { padding: 8px 16px; background: #4285f4; color: white; border: none; border-radius: 4px; cursor: pointer; }
-    button:hover { background: #357ae8; }
-    .form-box { background: #f9f9f9; padding: 20px; border-radius: 8px; margin-top: 20px; }
+    :root {
+      --bg: #f5f4f0;
+      --surface: #ffffff;
+      --border: #e8e6e0;
+      --text-primary: #1a1a1a;
+      --text-secondary: #888880;
+      --text-muted: #b8b6b0;
+      --accent: #1a1a1a;
+      --sidebar-w: 56px;
+      --topbar-h: 52px;
+    }
+
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+
+    body {
+      font-family: 'Noto Sans KR', 'DM Sans', sans-serif;
+      background: var(--bg);
+      color: var(--text-primary);
+      height: 100vh;
+      overflow: hidden;
+      display: flex;
+    }
+
+    /* ── 사이드바 ── */
+    .sidebar {
+      width: var(--sidebar-w);
+      height: 100vh;
+      background: var(--surface);
+      border-right: 1px solid var(--border);
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      padding: 14px 0;
+      gap: 4px;
+      flex-shrink: 0;
+      z-index: 10;
+    }
+
+    .sidebar-logo {
+      width: 32px;
+      height: 32px;
+      background: var(--text-primary);
+      border-radius: 8px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      margin-bottom: 10px;
+    }
+
+    .sidebar-logo svg { width: 16px; height: 16px; fill: white; }
+
+    .nav-icon {
+      width: 36px;
+      height: 36px;
+      border-radius: 8px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      color: var(--text-muted);
+      transition: all 0.15s ease;
+      position: relative;
+    }
+
+    .nav-icon:hover { background: var(--bg); color: var(--text-primary); }
+    .nav-icon.active { background: var(--text-primary); color: white; }
+
+    .nav-icon svg { width: 16px; height: 16px; }
+
+    .sidebar-divider {
+      width: 24px;
+      height: 1px;
+      background: var(--border);
+      margin: 4px 0;
+    }
+
+    .sidebar-bottom { margin-top: auto; display: flex; flex-direction: column; align-items: center; gap: 4px; }
+
+    /* ── 메인 ── */
+    .main {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      overflow: hidden;
+    }
+
+    /* ── 탑바 ── */
+    .topbar {
+      height: var(--topbar-h);
+      background: var(--surface);
+      border-bottom: 1px solid var(--border);
+      display: flex;
+      align-items: center;
+      padding: 0 24px;
+      gap: 16px;
+      flex-shrink: 0;
+    }
+
+    .topbar-brand {
+      font-family: 'DM Sans', sans-serif;
+      font-size: 15px;
+      font-weight: 500;
+      letter-spacing: 0.08em;
+      color: var(--text-primary);
+    }
+
+    .topbar-page {
+      font-size: 13px;
+      color: var(--text-muted);
+    }
+
+    .topbar-search {
+      margin-left: auto;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      background: var(--bg);
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      padding: 0 14px;
+      height: 34px;
+      width: 240px;
+      transition: border-color 0.15s;
+    }
+
+    .topbar-search:focus-within { border-color: var(--text-primary); }
+
+    .topbar-search input {
+      background: none;
+      border: none;
+      outline: none;
+      font-size: 13px;
+      color: var(--text-primary);
+      font-family: inherit;
+      width: 100%;
+    }
+
+    .topbar-search input::placeholder { color: var(--text-muted); }
+
+    .search-icon { color: var(--text-muted); flex-shrink: 0; }
+
+    .topbar-actions { display: flex; align-items: center; gap: 8px; margin-left: 12px; }
+
+    .topbar-btn {
+      width: 32px;
+      height: 32px;
+      border-radius: 8px;
+      border: 1px solid var(--border);
+      background: var(--surface);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      color: var(--text-secondary);
+      transition: all 0.15s;
+    }
+
+    .topbar-btn:hover { border-color: var(--text-primary); color: var(--text-primary); }
+
+    .avatar {
+      width: 32px;
+      height: 32px;
+      border-radius: 50%;
+      background: var(--text-primary);
+      color: white;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 12px;
+      font-weight: 500;
+      cursor: pointer;
+    }
+
+    /* ── 콘텐츠 ── */
+    .content {
+      flex: 1;
+      overflow-y: auto;
+      padding: 32px 28px;
+    }
+
+    .content-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-bottom: 28px;
+    }
+
+    .content-title {
+      font-size: 20px;
+      font-weight: 500;
+      color: var(--text-primary);
+    }
+
+    .content-date {
+      font-size: 12px;
+      color: var(--text-muted);
+    }
+
+    /* ── 카드 그리드 ── */
+    .grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(168px, 1fr));
+      gap: 12px;
+    }
+
+    .card {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 14px;
+      padding: 22px 18px 18px;
+      cursor: pointer;
+      transition: all 0.18s ease;
+      display: flex;
+      flex-direction: column;
+      gap: 14px;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .card::after {
+      content: '';
+      position: absolute;
+      inset: 0;
+      border-radius: 14px;
+      opacity: 0;
+      transition: opacity 0.18s;
+    }
+
+    .card:hover {
+      border-color: transparent;
+      transform: translateY(-2px);
+      box-shadow: 0 8px 24px rgba(0,0,0,0.08);
+    }
+
+    .card-icon-wrap {
+      width: 52px;
+      height: 52px;
+      border-radius: 12px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 22px;
+    }
+
+    .card-info { display: flex; flex-direction: column; gap: 3px; }
+
+    .card-name {
+      font-size: 14px;
+      font-weight: 500;
+      color: var(--text-primary);
+    }
+
+    .card-desc {
+      font-size: 12px;
+      color: var(--text-muted);
+    }
+
+    /* 카드 색상 테마 */
+    .theme-pink   .card-icon-wrap { background: #fce8ef; }
+    .theme-blue   .card-icon-wrap { background: #e3eeff; }
+    .theme-teal   .card-icon-wrap { background: #dff5ee; }
+    .theme-amber  .card-icon-wrap { background: #fef3dc; }
+    .theme-purple .card-icon-wrap { background: #eeecfd; }
+    .theme-green  .card-icon-wrap { background: #e6f4e0; }
+    .theme-coral  .card-icon-wrap { background: #fce9e4; }
+    .theme-sky    .card-icon-wrap { background: #e0f2fb; }
+    .theme-lime   .card-icon-wrap { background: #eef6da; }
+
+    .theme-pink:hover   { background: #fce8ef; }
+    .theme-blue:hover   { background: #e3eeff; }
+    .theme-teal:hover   { background: #dff5ee; }
+    .theme-amber:hover  { background: #fef3dc; }
+    .theme-purple:hover { background: #eeecfd; }
+    .theme-green:hover  { background: #e6f4e0; }
+    .theme-coral:hover  { background: #fce9e4; }
+    .theme-sky:hover    { background: #e0f2fb; }
+    .theme-lime:hover   { background: #eef6da; }
+
+    /* ── 스크롤바 ── */
+    .content::-webkit-scrollbar { width: 4px; }
+    .content::-webkit-scrollbar-track { background: transparent; }
+    .content::-webkit-scrollbar-thumb { background: var(--border); border-radius: 4px; }
+
+    /* ── 페이지 진입 애니메이션 ── */
+    @keyframes fadeUp {
+      from { opacity: 0; transform: translateY(10px); }
+      to   { opacity: 1; transform: translateY(0); }
+    }
+
+    .card {
+      animation: fadeUp 0.3s ease both;
+    }
+
+    .card:nth-child(1)  { animation-delay: 0.04s; }
+    .card:nth-child(2)  { animation-delay: 0.08s; }
+    .card:nth-child(3)  { animation-delay: 0.12s; }
+    .card:nth-child(4)  { animation-delay: 0.16s; }
+    .card:nth-child(5)  { animation-delay: 0.20s; }
+    .card:nth-child(6)  { animation-delay: 0.24s; }
+    .card:nth-child(7)  { animation-delay: 0.28s; }
+    .card:nth-child(8)  { animation-delay: 0.32s; }
+    .card:nth-child(9)  { animation-delay: 0.36s; }
   </style>
 </head>
 <body>
-  <h1>📦 재고 관리 시스템</h1>
 
-  <!-- 재고 목록 -->
-  <button onclick="loadData()">🔄 새로고침</button>
-  <table id="table">
-    <thead><tr><th>#</th><th>상품명</th><th>카테고리</th><th>수량</th><th>단가</th><th>최종수정일</th><th>수정</th></tr></thead>
-    <tbody id="tbody"></tbody>
-  </table>
-
-  <!-- 상품 추가 폼 -->
-  <div class="form-box">
-    <h3>➕ 상품 추가</h3>
-    <input id="name" placeholder="상품명">
-    <input id="category" placeholder="카테고리">
-    <input id="qty" type="number" placeholder="수량">
-    <input id="price" type="number" placeholder="단가">
-    <button onclick="addItem()">추가</button>
+<!-- 사이드바 -->
+<div class="sidebar">
+  <div class="sidebar-logo">
+    <svg viewBox="0 0 16 16"><rect x="2" y="2" width="5" height="5" rx="1"/><rect x="9" y="2" width="5" height="5" rx="1"/><rect x="2" y="9" width="5" height="5" rx="1"/><rect x="9" y="9" width="5" height="5" rx="1"/></svg>
   </div>
 
-  <script>
-    const SCRIPT_URL = "여기에_배포된_URL_붙여넣기";
+  <div class="nav-icon active" title="홈">
+    <svg viewBox="0 0 16 16" fill="currentColor"><path d="M8 1.5L1 7h1.5v7h4V10h3v4h4V7H15L8 1.5z"/></svg>
+  </div>
+  <div class="nav-icon" title="검색">
+    <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5"><circle cx="6.5" cy="6.5" r="4"/><line x1="10" y1="10" x2="14" y2="14"/></svg>
+  </div>
+  <div class="nav-icon" title="일정">
+    <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5"><rect x="2" y="3" width="12" height="11" rx="2"/><line x1="5" y1="1.5" x2="5" y2="4.5"/><line x1="11" y1="1.5" x2="11" y2="4.5"/><line x1="2" y1="7" x2="14" y2="7"/></svg>
+  </div>
+  <div class="nav-icon" title="송장">
+    <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5"><rect x="3" y="1" width="10" height="14" rx="1.5"/><line x1="5" y1="5" x2="11" y2="5"/><line x1="5" y1="8" x2="11" y2="8"/><line x1="5" y1="11" x2="8" y2="11"/></svg>
+  </div>
 
-    // 데이터 불러오기
-    async function loadData() {
-      const res = await fetch(`${SCRIPT_URL}?action=read`);
-      const json = await res.json();
-      const tbody = document.getElementById("tbody");
-      tbody.innerHTML = "";
-      json.data.forEach((row, i) => {
-        tbody.innerHTML += `
-          <tr>
-            <td>${i + 2}</td>
-            <td>${row["상품명"]}</td>
-            <td>${row["카테고리"]}</td>
-            <td id="qty-${i+2}">${row["수량"]}</td>
-            <td>${Number(row["단가"]).toLocaleString()}원</td>
-            <td>${row["최종수정일"]}</td>
-            <td>
-              <input type="number" id="new-qty-${i+2}" placeholder="새 수량" style="width:70px">
-              <button onclick="updateQty(${i+2})">수정</button>
-            </td>
-          </tr>`;
-      });
-    }
+  <div class="sidebar-divider"></div>
 
-    // 상품 추가
-    async function addItem() {
-      const body = {
-        action: "add",
-        상품명: document.getElementById("name").value,
-        카테고리: document.getElementById("category").value,
-        수량: document.getElementById("qty").value,
-        단가: document.getElementById("price").value,
-      };
-      await fetch(SCRIPT_URL, { method: "POST", body: JSON.stringify(body) });
-      alert("추가 완료!");
-      loadData();
-    }
+  <div class="nav-icon" title="품목">
+    <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M2 2h5l1.5 2H14v9H2V2z"/></svg>
+  </div>
+  <div class="nav-icon" title="재고">
+    <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M8 1L14 4.5v7L8 15 2 11.5v-7L8 1z"/></svg>
+  </div>
+  <div class="nav-icon" title="구매">
+    <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M1 1h2l2 8h8l2-5H5"/><circle cx="7" cy="13" r="1"/><circle cx="12" cy="13" r="1"/></svg>
+  </div>
+  <div class="nav-icon" title="판매">
+    <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5"><circle cx="8" cy="8" r="6"/><line x1="8" y1="5" x2="8" y2="8"/><line x1="8" y1="8" x2="11" y2="10"/></svg>
+  </div>
 
-    // 수량 수정
-    async function updateQty(row) {
-      const newQty = document.getElementById(`new-qty-${row}`).value;
-      if (!newQty) return alert("수량을 입력하세요");
-      const body = { action: "update", row, 수량: newQty };
-      await fetch(SCRIPT_URL, { method: "POST", body: JSON.stringify(body) });
-      alert("수정 완료!");
-      loadData();
-    }
+  <div class="sidebar-divider"></div>
 
-    // 페이지 로드 시 자동 실행
-    loadData();
-  </script>
+  <div class="nav-icon" title="TAX">
+    <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5"><rect x="2" y="2" width="12" height="12" rx="2"/><line x1="5" y1="5" x2="11" y2="11"/><line x1="11" y1="5" x2="5" y2="11"/></svg>
+  </div>
+  <div class="nav-icon" title="목록">
+    <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5"><line x1="4" y1="4" x2="12" y2="4"/><line x1="4" y1="8" x2="12" y2="8"/><line x1="4" y1="12" x2="9" y2="12"/></svg>
+  </div>
+
+  <div class="sidebar-bottom">
+    <div class="sidebar-divider"></div>
+    <div class="nav-icon" title="설정">
+      <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5"><circle cx="8" cy="8" r="2.5"/><path d="M8 1.5v1M8 13.5v1M1.5 8h1M13.5 8h1M3.2 3.2l.7.7M12.1 12.1l.7.7M12.1 3.9l-.7.7M4.6 12.1l-.7.7"/></svg>
+    </div>
+    <div class="nav-icon" title="도움말">
+      <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5"><circle cx="8" cy="8" r="6"/><path d="M6.5 6a1.5 1.5 0 013 0c0 1.5-1.5 2-1.5 3"/><circle cx="8" cy="12" r="0.5" fill="currentColor"/></svg>
+    </div>
+    <div class="avatar">R</div>
+  </div>
+</div>
+
+<!-- 메인 -->
+<div class="main">
+  <!-- 탑바 -->
+  <div class="topbar">
+    <span class="topbar-brand">SIWOOM K</span>
+    <span class="topbar-page">홈</span>
+
+    <div class="topbar-search">
+      <svg class="search-icon" width="14" height="14" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5">
+        <circle cx="6.5" cy="6.5" r="4"/><line x1="10" y1="10" x2="14" y2="14"/>
+      </svg>
+      <input placeholder="Search 홈">
+    </div>
+
+    <div class="topbar-actions">
+      <div class="topbar-btn" title="새로고침">
+        <svg width="14" height="14" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5">
+          <path d="M13.5 8A5.5 5.5 0 112.5 5"/><path d="M2 2v3.5H5.5"/>
+        </svg>
+      </div>
+      <div class="topbar-btn" title="필터">
+        <svg width="14" height="14" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5">
+          <line x1="2" y1="4" x2="14" y2="4"/><line x1="4" y1="8" x2="12" y2="8"/><line x1="6" y1="12" x2="10" y2="12"/>
+        </svg>
+      </div>
+    </div>
+  </div>
+
+  <!-- 콘텐츠 -->
+  <div class="content">
+    <div class="content-header">
+      <div class="content-title">홈</div>
+      <div class="content-date" id="today-date"></div>
+    </div>
+
+    <div class="grid">
+
+      <div class="card theme-pink" onclick="alert('일정 페이지로 이동')">
+        <div class="card-icon-wrap">📅</div>
+        <div class="card-info">
+          <div class="card-name">일정</div>
+          <div class="card-desc">일정</div>
+        </div>
+      </div>
+
+      <div class="card theme-blue" onclick="alert('품목검색 페이지로 이동')">
+        <div class="card-icon-wrap">🔍</div>
+        <div class="card-info">
+          <div class="card-name">품목검색</div>
+          <div class="card-desc">품목검색</div>
+        </div>
+      </div>
+
+      <div class="card theme-blue" onclick="alert('POB 검색 페이지로 이동')">
+        <div class="card-icon-wrap">❓</div>
+        <div class="card-info">
+          <div class="card-name">POB 검색</div>
+          <div class="card-desc">POB 검색</div>
+        </div>
+      </div>
+
+      <div class="card theme-teal" onclick="alert('판매주문 페이지로 이동')">
+        <div class="card-icon-wrap">💲</div>
+        <div class="card-info">
+          <div class="card-name">판매주문</div>
+          <div class="card-desc">판매목록</div>
+        </div>
+      </div>
+
+      <div class="card theme-amber" onclick="alert('SKU 페이지로 이동')">
+        <div class="card-icon-wrap">🏷️</div>
+        <div class="card-info">
+          <div class="card-name">SKU</div>
+          <div class="card-desc">SKU</div>
+        </div>
+      </div>
+
+      <div class="card theme-green" onclick="alert('송장내역확인 페이지로 이동')">
+        <div class="card-icon-wrap">🧾</div>
+        <div class="card-info">
+          <div class="card-name">송장내역확인</div>
+          <div class="card-desc">송장내역확인</div>
+        </div>
+      </div>
+
+      <div class="card theme-amber" onclick="alert('재고 페이지로 이동')">
+        <div class="card-icon-wrap">📦</div>
+        <div class="card-info">
+          <div class="card-name">재고</div>
+          <div class="card-desc">재고</div>
+        </div>
+      </div>
+
+      <div class="card theme-teal" onclick="alert('구매 페이지로 이동')">
+        <div class="card-icon-wrap">🛒</div>
+        <div class="card-info">
+          <div class="card-name">구매</div>
+          <div class="card-desc">구매</div>
+        </div>
+      </div>
+
+      <div class="card theme-purple" onclick="alert('월차 페이지로 이동')">
+        <div class="card-icon-wrap">🛏️</div>
+        <div class="card-info">
+          <div class="card-name">월차</div>
+          <div class="card-desc">월차</div>
+        </div>
+      </div>
+
+    </div>
+  </div>
+</div>
+
+<script>
+  const d = new Date();
+  document.getElementById('today-date').textContent =
+    d.getFullYear() + '년 ' + (d.getMonth()+1) + '월 ' + d.getDate() + '일';
+</script>
 </body>
 </html>
