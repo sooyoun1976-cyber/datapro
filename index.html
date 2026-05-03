@@ -480,9 +480,42 @@
 </div>
 
 <script>
+  // 1. 기존 날짜 표시 기능
   const d = new Date();
   document.getElementById('today-date').textContent =
     d.getFullYear() + '년 ' + (d.getMonth()+1) + '월 ' + d.getDate() + '일';
+
+  // 2. 구글 앱스 스크립트 연동 함수
+  async function sendLogToSheet(actionName) {
+    const url = 'https://script.google.com/macros/s/AKfycbx4lcJb3De1len92Q1tx61ETbkGFD0mH0SSwIIlsBBDOAdTlyzdfxWjfIiz-_wfnf_t/exec';
+    
+    // 전송할 데이터 (예: 클릭한 버튼 이름, 시간)
+    const data = {
+      action: actionName,
+      timestamp: new Date().toLocaleString(),
+      user: 'R' // 대시보드 아바타 이름
+    };
+
+    try {
+      // GAS로 데이터 전송 (no-cors 모드는 응답을 읽을 수 없으므로 성공 여부만 확인)
+      await fetch(url, {
+        method: 'POST',
+        mode: 'no-cors',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(data)
+      });
+      console.log(actionName + " 데이터 전송 시도 완료");
+    } catch (error) {
+      console.error("전송 실패:", error);
+    }
+  }
+
+  // 3. 카드 클릭 이벤트 연결 (기존 alert 대신 시트 전송 추가)
+  // 예: '일정' 카드를 클릭하면 시트에 기록을 남깁니다.
+  function handleCardClick(name) {
+    alert(name + ' 페이지로 이동합니다.');
+    sendLogToSheet(name); // 클릭 시 시트로 데이터 전송
+  }
 </script>
 </body>
 </html>
