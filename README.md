@@ -1,2 +1,92 @@
 # datapro
-재고관리를 어떻게 하지
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8">
+  <title>재고 관리</title>
+  <style>
+    body { font-family: sans-serif; max-width: 900px; margin: 40px auto; padding: 0 20px; }
+    table { width: 100%; border-collapse: collapse; margin-top: 20px; }
+    th, td { border: 1px solid #ddd; padding: 10px; text-align: center; }
+    th { background: #4285f4; color: white; }
+    input, select { padding: 8px; margin: 5px; border: 1px solid #ccc; border-radius: 4px; }
+    button { padding: 8px 16px; background: #4285f4; color: white; border: none; border-radius: 4px; cursor: pointer; }
+    button:hover { background: #357ae8; }
+    .form-box { background: #f9f9f9; padding: 20px; border-radius: 8px; margin-top: 20px; }
+  </style>
+</head>
+<body>
+  <h1>📦 재고 관리 시스템</h1>
+
+  <!-- 재고 목록 -->
+  <button onclick="loadData()">🔄 새로고침</button>
+  <table id="table">
+    <thead><tr><th>#</th><th>상품명</th><th>카테고리</th><th>수량</th><th>단가</th><th>최종수정일</th><th>수정</th></tr></thead>
+    <tbody id="tbody"></tbody>
+  </table>
+
+  <!-- 상품 추가 폼 -->
+  <div class="form-box">
+    <h3>➕ 상품 추가</h3>
+    <input id="name" placeholder="상품명">
+    <input id="category" placeholder="카테고리">
+    <input id="qty" type="number" placeholder="수량">
+    <input id="price" type="number" placeholder="단가">
+    <button onclick="addItem()">추가</button>
+  </div>
+
+  <script>
+    const SCRIPT_URL = "여기에_배포된_URL_붙여넣기";
+
+    // 데이터 불러오기
+    async function loadData() {
+      const res = await fetch(`${SCRIPT_URL}?action=read`);
+      const json = await res.json();
+      const tbody = document.getElementById("tbody");
+      tbody.innerHTML = "";
+      json.data.forEach((row, i) => {
+        tbody.innerHTML += `
+          <tr>
+            <td>${i + 2}</td>
+            <td>${row["상품명"]}</td>
+            <td>${row["카테고리"]}</td>
+            <td id="qty-${i+2}">${row["수량"]}</td>
+            <td>${Number(row["단가"]).toLocaleString()}원</td>
+            <td>${row["최종수정일"]}</td>
+            <td>
+              <input type="number" id="new-qty-${i+2}" placeholder="새 수량" style="width:70px">
+              <button onclick="updateQty(${i+2})">수정</button>
+            </td>
+          </tr>`;
+      });
+    }
+
+    // 상품 추가
+    async function addItem() {
+      const body = {
+        action: "add",
+        상품명: document.getElementById("name").value,
+        카테고리: document.getElementById("category").value,
+        수량: document.getElementById("qty").value,
+        단가: document.getElementById("price").value,
+      };
+      await fetch(SCRIPT_URL, { method: "POST", body: JSON.stringify(body) });
+      alert("추가 완료!");
+      loadData();
+    }
+
+    // 수량 수정
+    async function updateQty(row) {
+      const newQty = document.getElementById(`new-qty-${row}`).value;
+      if (!newQty) return alert("수량을 입력하세요");
+      const body = { action: "update", row, 수량: newQty };
+      await fetch(SCRIPT_URL, { method: "POST", body: JSON.stringify(body) });
+      alert("수정 완료!");
+      loadData();
+    }
+
+    // 페이지 로드 시 자동 실행
+    loadData();
+  </script>
+</body>
+</html>
