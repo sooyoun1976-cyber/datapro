@@ -1,5 +1,8 @@
 <!DOCTYPE html>
 <html lang="ko">
+
+
+
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -168,6 +171,11 @@
   </style>
 </head>
 <body>
+<!-- 상단 브랜드 로고 클릭 시 홈으로 이동 -->
+<span class="topbar-brand" onclick="window.location.href='index.html'" style="cursor:pointer;">SIWOOM K</span>
+
+<!-- 사이드바 홈 아이콘 클릭 시 홈으로 이동 -->
+<div class="nav-icon" onclick="window.location.href='index.html'">🏠</div>
 
 <div class="sidebar">
   <div class="nav-icon active">🔍</div>
