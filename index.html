@@ -403,7 +403,7 @@
 
     <div class="grid">
 
-      <div class="card theme-pink" onclick="alert('일정 페이지로 이동')">
+      <div class="card theme-pink" onclick="handleCardClick('일정')">
         <div class="card-icon-wrap">📅</div>
         <div class="card-info">
           <div class="card-name">일정</div>
@@ -411,7 +411,7 @@
         </div>
       </div>
 
-      <div class="card theme-blue" onclick="alert('품목검색 페이지로 이동')">
+      <div class="card theme-blue" onclick="handleCardClick('품목검색')">
         <div class="card-icon-wrap">🔍</div>
         <div class="card-info">
           <div class="card-name">품목검색</div>
@@ -419,7 +419,7 @@
         </div>
       </div>
 
-      <div class="card theme-blue" onclick="alert('POB 검색 페이지로 이동')">
+      <div class="card theme-blue" onclick="handleCardClick('POB 검색')">
         <div class="card-icon-wrap">❓</div>
         <div class="card-info">
           <div class="card-name">POB 검색</div>
@@ -427,7 +427,7 @@
         </div>
       </div>
 
-      <div class="card theme-teal" onclick="alert('판매주문 페이지로 이동')">
+      <div class="card theme-teal" onclick="handleCardClick('판매주문')">
         <div class="card-icon-wrap">💲</div>
         <div class="card-info">
           <div class="card-name">판매주문</div>
@@ -435,7 +435,7 @@
         </div>
       </div>
 
-      <div class="card theme-amber" onclick="alert('SKU 페이지로 이동')">
+      <div class="card theme-amber" onclick="handleCardClick('SKU')">
         <div class="card-icon-wrap">🏷️</div>
         <div class="card-info">
           <div class="card-name">SKU</div>
@@ -443,7 +443,7 @@
         </div>
       </div>
 
-      <div class="card theme-green" onclick="alert('송장내역확인 페이지로 이동')">
+      <div class="card theme-green" onclick="handleCardClick('송장내역확인')">
         <div class="card-icon-wrap">🧾</div>
         <div class="card-info">
           <div class="card-name">송장내역확인</div>
@@ -451,7 +451,7 @@
         </div>
       </div>
 
-      <div class="card theme-amber" onclick="alert('재고 페이지로 이동')">
+      <div class="card theme-amber" onclick="handleCardClick('재고')">
         <div class="card-icon-wrap">📦</div>
         <div class="card-info">
           <div class="card-name">재고</div>
@@ -459,7 +459,7 @@
         </div>
       </div>
 
-      <div class="card theme-teal" onclick="alert('구매 페이지로 이동')">
+      <div class="card theme-teal" onclick="handleCardClick('구매')">
         <div class="card-icon-wrap">🛒</div>
         <div class="card-info">
           <div class="card-name">구매</div>
@@ -467,7 +467,7 @@
         </div>
       </div>
 
-      <div class="card theme-purple" onclick="alert('월차 페이지로 이동')">
+      <div class="card theme-purple" onclick="handleCardClick('월차')">
         <div class="card-icon-wrap">🛏️</div>
         <div class="card-info">
           <div class="card-name">월차</div>
@@ -489,32 +489,29 @@
   async function sendLogToSheet(actionName) {
     const url = 'https://script.google.com/macros/s/AKfycbx4lcJb3De1len92Q1tx61ETbkGFD0mH0SSwIIlsBBDOAdTlyzdfxWjfIiz-_wfnf_t/exec';
     
-    // 전송할 데이터 (예: 클릭한 버튼 이름, 시간)
     const data = {
       action: actionName,
       timestamp: new Date().toLocaleString(),
-      user: 'R' // 대시보드 아바타 이름
+      user: 'R' 
     };
 
     try {
-      // GAS로 데이터 전송 (no-cors 모드는 응답을 읽을 수 없으므로 성공 여부만 확인)
       await fetch(url, {
         method: 'POST',
         mode: 'no-cors',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(data)
       });
-      console.log(actionName + " 데이터 전송 시도 완료");
+      console.log(actionName + " 데이터 전송 완료");
     } catch (error) {
       console.error("전송 실패:", error);
     }
   }
 
-  // 3. 카드 클릭 이벤트 연결 (기존 alert 대신 시트 전송 추가)
-  // 예: '일정' 카드를 클릭하면 시트에 기록을 남깁니다.
+  // 3. 카드 클릭 이벤트 (안내창 표시 및 데이터 전송)
   function handleCardClick(name) {
     alert(name + ' 페이지로 이동합니다.');
-    sendLogToSheet(name); // 클릭 시 시트로 데이터 전송
+    sendLogToSheet(name); 
   }
 </script>
 </body>
